@@ -182,7 +182,7 @@ if __name__ == "__main__":
 
     cfm, tokenizer, muq, vae = prepare_model(max_frames, device, repo_id=args.repo_id)
 
-    lrc_input = args.lrc_input
+    lrc_input = args.lrc_path
     if lrc_input:
         if os.path.isfile(lrc_input):
             with open(lrc_input, "r", encoding="utf-8") as f:
