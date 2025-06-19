@@ -88,6 +88,11 @@ def inference(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
+        "--file-name",
+        type=str,
+        help="Name of audio generated file",
+    )  
+    parser.add_argument(
         "--lrc-path",
         type=str,
         help="lyrics of target song",
@@ -177,11 +182,16 @@ if __name__ == "__main__":
 
     cfm, tokenizer, muq, vae = prepare_model(max_frames, device, repo_id=args.repo_id)
 
-    if args.lrc_path:
-        with open(args.lrc_path, "r", encoding='utf-8') as f:
-            lrc = f.read()
+    lrc_input = args.lrc_input
+    if lrc_input:
+        if os.path.isfile(lrc_input):
+            with open(lrc_input, "r", encoding="utf-8") as f:
+                lrc = f.read()
+        else:
+            lrc = lrc_input  # assume it's the full LRC string
     else:
         lrc = ""
+        
     lrc_prompt, start_time = get_lrc_token(max_frames, lrc, tokenizer, device)
 
     if args.ref_audio_path:
@@ -215,5 +225,5 @@ if __name__ == "__main__":
     output_dir = args.output_dir
     os.makedirs(output_dir, exist_ok=True)
 
-    output_path = os.path.join(output_dir, "output.wav")
+    output_path = os.path.join(output_dir, args.file_name)
     torchaudio.save(output_path, generated_song, sample_rate=44100)
